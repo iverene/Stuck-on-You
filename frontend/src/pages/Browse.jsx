@@ -91,7 +91,7 @@ const Browse = () => {
       {/* Floating Action Button */}
       <Link 
         to="/submit"
-        className="fixed bottom-8 right-8 w-16 h-16 bg-[#ab1615] rounded-full shadow-2xl flex items-center justify-center hover:bg-[#8f1312] hover:-translate-y-1 transition-all z-50 group border-4 border-white"
+        className="fixed bottom-8 right-8 w-16 h-16 bg-primary rounded-full shadow-2xl flex items-center justify-center hover:bg-[#8f1312] hover:-translate-y-1 transition-all z-50 group border-4 border-white"
         title="Write a Note"
       >
         <PenLine className="w-8 h-8 text-white group-hover:rotate-12 transition-transform" />

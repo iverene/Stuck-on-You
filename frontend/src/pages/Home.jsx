@@ -12,7 +12,7 @@ const Home = () => {
         <img 
           src={bgImage} 
           alt="Background Texture" 
-          className="w-full h-full object-cover opacity-80" 
+          className="w-full h-full object-cover opacity-90" 
         />
       </div>
 
@@ -21,7 +21,7 @@ const Home = () => {
         <img 
           src={headingImage} 
           alt="Stuck on You - Home Page" 
-          className="w-130 max-w-xl md:max-w-2xl drop-shadow-sm" 
+          className="w-125 max-w-xl md:max-w-2xl drop-shadow-sm" 
         />
       </div>
 
