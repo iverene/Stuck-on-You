@@ -12,7 +12,7 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="fixed top-0 left-0 w-full z-50 px-6 py-3 flex justify-between items-center transition-all duration-300 backdrop-blur-md bg-[#fdfbf7]/70 border-b-2 border-primary shadow-sm">
+    <nav className="fixed top-0 left-0 w-full z-50 px-6 py-3 flex justify-between items-center transition-all duration-300 backdrop-blur-md bg-[#fdfbf7]/70 border-b-1 border-primary shadow-sm">
       
       {/* Left Side: Logo */}
       <Link to="/" className="hover:opacity-80 transition-opacity">

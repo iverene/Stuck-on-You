@@ -18,7 +18,7 @@ const App = () => {
         <Navbar />
 
         {/* Main Content Area */}
-        <main className="grow">
+        <main className="grow ">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/submit" element={<Submit />} />
