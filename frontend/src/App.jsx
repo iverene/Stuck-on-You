@@ -18,7 +18,7 @@ const App = () => {
         <Navbar />
 
         {/* Main Content Area */}
-        <main className="flex-grow max-w-5xl mx-auto w-full px-4 py-8">
+        <main className="grow">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/submit" element={<Submit />} />
