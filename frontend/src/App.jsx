@@ -1,7 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 // Components
-import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import LoveHuePopup from './components/LoveHuePopup';
 
@@ -16,7 +15,6 @@ const App = () => {
     <Router>
       <div className="flex flex-col min-h-screen">
         
-        <Navbar />
 
         {/* Main Content Area */}
         <main className="grow ">
