@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
+import Navbar from '../components/Navbar';
 
 const Submit = () => {
-  // Use the environment variable for the API URL
   const API_URL = import.meta.env.VITE_API_URL;
 
   // Form State
@@ -12,7 +12,6 @@ const Submit = () => {
     color: '#ffcdd2', 
   });
 
-  // State for handling feedback messages
   const [status, setStatus] = useState({ type: '', message: '' });
 
   const colors = [
@@ -26,15 +25,12 @@ const Submit = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setStatus({ type: '', message: '' }); // Clear previous status
+    setStatus({ type: '', message: '' }); 
     
     try {
       const response = await fetch(`${API_URL}/api/notes`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        // Map frontend 'to' state to database 'to_name' column
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           to_name: formData.to,
           message: formData.message,
@@ -47,10 +43,8 @@ const Submit = () => {
 
       if (response.ok) {
         setStatus({ type: 'success', message: 'Note successfully stuck to the wall!' });
-        // Reset form after successful submission
         setFormData({ to: '', message: '', alias: '', color: '#ffcdd2' });
       } else if (response.status === 429) {
-        // Handle Rate Limiting error specifically
         setStatus({ type: 'error', message: data.error || 'Too many submissions. Please wait an hour.' });
       } else {
         setStatus({ type: 'error', message: data.error || 'Failed to stick note.' });
@@ -62,10 +56,11 @@ const Submit = () => {
   };
 
   return (
-    <div className="w-full flex items-center justify-center mt-10 min-h-[80vh] py-10">
-      <div className="w-full max-w-lg px-6">
+    // Changed: Adjusted top margin and padding for mobile
+    <div className="w-full flex items-center justify-center pt-24 pb-10 min-h-[80vh] px-4 sm:px-6">
+      <Navbar />
+      <div className="w-full max-w-lg">
         
-        {/* UI Feedback Message */}
         {status.message && (
           <div className={`mb-6 p-4 rounded-xl font-sans text-sm border ${
             status.type === 'success' 
@@ -76,7 +71,7 @@ const Submit = () => {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4 sm:gap-5">
           <div className="flex flex-col gap-1">
             <label htmlFor="to" className="text-primary font-sans font-medium text-base">To (Optional)</label>
             <input
@@ -85,7 +80,7 @@ const Submit = () => {
               name="to"
               value={formData.to}
               onChange={handleChange}
-              className="w-full border border-primary/60 bg-White rounded-xl px-4 py-3 text-gray-700 focus:outline-none focus:ring-1 focus:ring-primary transition-all"
+              className="w-full border border-primary/60 bg-White rounded-xl px-4 py-3 text-gray-700 focus:outline-none focus:ring-1 focus:ring-primary transition-all text-sm sm:text-base"
               placeholder="e.g. Crushiecakes"
             />
           </div>
@@ -99,7 +94,7 @@ const Submit = () => {
               value={formData.message}
               onChange={handleChange}
               required
-              className="w-full border border-primary/60 bg-White rounded-xl px-4 py-3 text-gray-700 resize-none focus:outline-none focus:ring-1 focus:ring-primary transition-all"
+              className="w-full border border-primary/60 bg-White rounded-xl px-4 py-3 text-gray-700 resize-none focus:outline-none focus:ring-1 focus:ring-primary transition-all text-sm sm:text-base"
               placeholder="Write your note here..."
             ></textarea>
           </div>
@@ -112,21 +107,23 @@ const Submit = () => {
               name="alias"
               value={formData.alias}
               onChange={handleChange}
-              className="w-full border border-primary/60 bg-White rounded-xl px-4 py-3 text-gray-700 focus:outline-none focus:ring-1 focus:ring-primary transition-all"
+              className="w-full border border-primary/60 bg-White rounded-xl px-4 py-3 text-gray-700 focus:outline-none focus:ring-1 focus:ring-primary transition-all text-sm sm:text-base"
               placeholder="e.g. Secret Admirer"
             />
           </div>
 
-          <div className="flex gap-3 mt-2">
+          {/* Changed: Wrap colors if screen is extremely small */}
+          <div className="flex flex-wrap gap-3 mt-2">
             {colors.map((color) => (
               <button
                 key={color}
                 type="button"
                 onClick={() => setFormData({ ...formData, color })}
-                className={`w-10 h-10 rounded-md transition-transform hover:scale-110 ${
+                className={`w-10 h-10 rounded-md transition-transform hover:scale-110 cursor-pointer shadow-sm ${
                   formData.color === color ? 'ring-2 ring-offset-2 ring-primary scale-110' : ''
                 }`}
                 style={{ backgroundColor: color }}
+                aria-label={`Select color ${color}`}
               />
             ))}
           </div>
@@ -134,7 +131,7 @@ const Submit = () => {
           <button
             type="submit"
             disabled={status.type === 'error' && status.message.includes('wait')}
-            className="w-full mt-4 bg-primary text-white font-sans font-semibold text-lg py-2 rounded-xl shadow-md hover:bg-[#8f1312] transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full mt-4 bg-primary text-white font-sans font-semibold text-lg py-3 rounded-xl shadow-md hover:bg-[#8f1312] transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
             Stick to the Wall
           </button>
