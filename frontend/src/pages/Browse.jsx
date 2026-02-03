@@ -157,7 +157,7 @@ const Browse = () => {
       {/* NOTE POPUP MODAL */}
       {selectedNote && (
         <div 
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fadeIn"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 animate-fadeIn"
           onClick={() => setSelectedNote(null)}
         >
           <div 
