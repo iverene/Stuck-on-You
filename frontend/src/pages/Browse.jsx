@@ -119,9 +119,8 @@ const Browse = () => {
                   fontFamily: '"Caveat", cursive', 
                 }}
               >
-                {/* Visual Pin */}
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-red-600 shadow-sm border border-red-800 z-20"></div>
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-0.5 h-3 bg-black/20 z-10"></div>
+                {/* Visual Tape (Replaced Pin) */}
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-20 h-6 bg-white/30 backdrop-blur-md rotate-[-2deg] shadow-sm border border-white/20 z-20"></div>
 
                 <div className="grow flex flex-col justify-between items-center text-center h-full overflow-hidden">
                   {note.to_name && (
@@ -135,7 +134,7 @@ const Browse = () => {
                   </p>
 
                   {note.alias && (
-                    <span className="text-xs font-bold opacity-60 mt-1 block pt-1 w-full text-right truncate px-1">
+                    <span className="text-xs font-bold opacity-60 mt-1 block pt-1 w-full text-right truncate px-3">
                       - {note.alias}
                     </span>
                   )}
