@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import { PenLine } from 'lucide-react';
 
 const Submit = () => {
   const API_URL = import.meta.env.VITE_API_URL;
+  const navigate = useNavigate(); 
 
   // Form State
   const [formData, setFormData] = useState({
@@ -49,8 +51,15 @@ const Submit = () => {
       const data = await response.json();
 
       if (response.ok) {
-        setStatus({ type: 'success', message: 'Note successfully stuck to the wall!' });
+        // 3. Update status to show success
+        setStatus({ type: 'success', message: 'Stuck! Redirecting to wall...' });
         setFormData({ to: '', message: '', alias: '', color: '#ffcdd2' });
+
+        // 4. Redirect to /browse after 1.5 seconds
+        setTimeout(() => {
+          navigate('/browse');
+        }, 1500);
+
       } else if (response.status === 429) {
         setStatus({ type: 'error', message: data.error || 'Too many submissions. Please wait an hour.' });
       } else {
@@ -70,12 +79,13 @@ const Submit = () => {
       <div 
         className="flex-grow flex items-center justify-center pt-24 pb-10 px-4 sm:px-8 md:px-12 relative overflow-hidden"
         style={{
-          backgroundColor: '#fdfbf7', 
+          backgroundColor: '#fdfbf7', // Paper White
+          // CSS Gradients for Notebook Lines and Margin
           backgroundImage: `
             linear-gradient(90deg, transparent 40px, #ab161520 41px, transparent 41px), /* Red Margin Line */
             repeating-linear-gradient(0deg, #e5e7eb 0px, #e5e7eb 1px, transparent 1px, transparent 28px) /* Horizontal Blue/Gray Lines */
           `,
-          backgroundAttachment: 'local' 
+          backgroundAttachment: 'local' // Ensures lines scroll with content if needed
         }}
       >
         
@@ -99,7 +109,7 @@ const Submit = () => {
             className="w-full aspect-square sm:aspect-[4/3] md:aspect-[4/3] shadow-2xl transition-colors duration-500 ease-in-out relative flex flex-col p-6 sm:p-8 md:p-10 lg:p-12 transform rotate-1 hover:rotate-0 transition-transform"
             style={{ 
               backgroundColor: formData.color,
-              fontFamily: '"Caveat", cursive', 
+              fontFamily: '"Caveat", cursive', // Handwritten font
               boxShadow: '15px 15px 40px rgba(0,0,0,0.2), inset 0 0 20px rgba(0,0,0,0.05)' 
             }}
           >
