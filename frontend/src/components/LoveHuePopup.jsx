@@ -49,7 +49,7 @@ const LoveHuePopup = () => {
           </h3>
           
           <p className="font-sans text-gray-600 text-xs sm:text-sm leading-snug mb-3">
-            Not sure how to express your feelings? Discover your love language colors now.
+            Unlock your heart's palette! Discover your unique love language spectrum and see what color your love truly is.
           </p>
 
           {/* CTA Button */}
