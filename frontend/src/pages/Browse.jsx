@@ -104,7 +104,7 @@ const Browse = () => {
         {loading ? (
           <div className="flex flex-col items-center justify-center h-64 text-white font-sans mt-20">
             <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin mb-4"></div>
-            <p className="text-xl">Loading drama...</p>
+            <p className="text-xl font-cursive">Loading notes...</p>
           </div>
         ) : (
           <div className="flex flex-wrap justify-center content-start gap-4 sm:gap-8 pt-6 pb-24 animate-fadeIn">
@@ -158,7 +158,7 @@ const Browse = () => {
       {/* NOTE POPUP MODAL */}
       {selectedNote && (
         <div 
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fadeIn"
           onClick={() => setSelectedNote(null)}
         >
           <div 
