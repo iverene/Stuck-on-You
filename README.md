@@ -7,7 +7,6 @@
 * **Anonymous Note Submission**: Users can write messages, specify a recipient ("To"), add an alias, and customize their note's color.
 * **Live Corkboard Browsing**: View submitted notes displayed on a virtual corkboard with a randomized, natural look.
 * **Auto & Manual Pagination**: The board automatically cycles through pages of notes every 20 seconds, or users can manually navigate using "Next" and "Previous" controls.
-* **Spam Protection**: Rate limiting is implemented to restrict note submissions to 5 per hour per IP address to prevent spam.
 * **LoveHue Integration**: Features a popup linking to "LoveHue," allowing users to discover their love language spectrum.
 
 ## 🛠️ Tech Stack

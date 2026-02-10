@@ -1,193 +1,201 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Check, X } from 'lucide-react';
 import Navbar from '../components/Navbar';
-import { PenLine } from 'lucide-react';
+
+const colors = [
+  '#ffadad', // Red
+  '#ffd6a5', // Orange
+  '#fdffb6', // Yellow
+  '#caffbf', // Green
+  '#9bf6ff', // Cyan
+  '#a0c4ff', // Blue
+  '#bdb2ff', // Purple
+  '#ffc6ff', // Pink
+  '#fffffc'  // White
+];
 
 const Submit = () => {
   const API_URL = import.meta.env.VITE_API_URL;
-  const navigate = useNavigate(); 
-
-  // Form State
+  const navigate = useNavigate();
+  
   const [formData, setFormData] = useState({
-    to: '',
+    to_name: '',
     message: '',
     alias: '',
-    color: '#ffcdd2', // Default Pink
+    color: '#fffffc'
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  const [status, setStatus] = useState({ type: '', message: '' });
-
-  // Lighter pastel colors for better readability
-  const colors = [
-    '#ffcdd2', // Pink
-    '#fff59d', // Yellow
-    '#ef9a9a', // Red/Salmon
-    '#90caf9', // Blue
-    '#a5d6a7', // Green
-    '#ce93d8', // Purple
-  ];
+  // Constants
+  const MAX_CHARS = 200;
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setStatus({ type: '', message: '' });
+    setLoading(true);
+    setError(null);
 
     try {
       const response = await fetch(`${API_URL}/api/notes`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          to_name: formData.to,
-          message: formData.message,
-          alias: formData.alias,
-          color: formData.color,
-        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        // 3. Update status to show success
-        setStatus({ type: 'success', message: 'Stuck! Redirecting to wall...' });
-        setFormData({ to: '', message: '', alias: '', color: '#ffcdd2' });
-
-        // 4. Redirect to /browse after 1.5 seconds
-        setTimeout(() => {
-          navigate('/browse');
-        }, 1500);
-
-      } else if (response.status === 429) {
-        setStatus({ type: 'error', message: data.error || 'Too many submissions. Please wait an hour.' });
-      } else {
-        setStatus({ type: 'error', message: data.error || 'Failed to stick note.' });
+      if (!response.ok) {
+        // Handle rate limit (429) specifically if needed, or generic errors
+        if (response.status === 429) {
+          throw new Error('You are doing that too much. Please wait a bit.');
+        }
+        const errData = await response.json();
+        throw new Error(errData.error || 'Failed to post note');
       }
-    } catch (error) {
-      console.error('Submission failed:', error);
-      setStatus({ type: 'error', message: 'Could not connect to the server.' });
+
+      navigate('/browse');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="w-full min-h-screen relative flex flex-col">
+    <div 
+      className="min-h-screen pt-20 pb-10 px-4 flex justify-center items-center"
+      style={{
+        backgroundColor: '#fdfbf7', // Paper White
+        // CSS Gradients to create the notebook lines
+        backgroundImage: `
+          linear-gradient(90deg, transparent 40px, #ab161520 41px, transparent 41px), 
+          repeating-linear-gradient(0deg, #e5e7eb 0px, #e5e7eb 1px, transparent 1px, transparent 28px) 
+        `,
+        backgroundAttachment: 'local' 
+      }}
+    >
       <Navbar />
 
-      {/* 1. The Notebook Sheet Surface (Background) */}
-      <div 
-        className="flex-grow flex items-center justify-center pt-24 pb-10 px-4 sm:px-8 md:px-12 relative overflow-hidden"
-        style={{
-          backgroundColor: '#fdfbf7', // Paper White
-          // CSS Gradients for Notebook Lines and Margin
-          backgroundImage: `
-            linear-gradient(90deg, transparent 40px, #ab161520 41px, transparent 41px), /* Red Margin Line */
-            repeating-linear-gradient(0deg, #e5e7eb 0px, #e5e7eb 1px, transparent 1px, transparent 28px) /* Horizontal Blue/Gray Lines */
-          `,
-          backgroundAttachment: 'local' // Ensures lines scroll with content if needed
-        }}
-      >
-        
-        {/* Status Messages (Floating above) */}
-        {status.message && (
-          <div className={`absolute top-28 left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-full shadow-xl font-sans text-sm font-bold tracking-wide transform transition-all duration-300 w-max max-w-[90%] text-center ${
-            status.type === 'success' 
-              ? 'bg-green-100 text-green-800 border-2 border-green-200' 
-              : 'bg-red-100 text-red-800 border-2 border-red-200'
-          }`}>
-            {status.message}
-          </div>
-        )}
+      <div className="w-full max-w-lg">
+        {/* Sticky Note Form Container */}
+        <div 
+          className="relative w-full aspect-square sm:aspect-[4/5] shadow-2xl p-8 flex flex-col transition-colors duration-300 transform rotate-1"
+          style={{ 
+            backgroundColor: formData.color,
+            fontFamily: '"Caveat", cursive',
+          }}
+        >
+          {/* Tape Visual */}
+          <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-32 h-8 bg-white/30 backdrop-blur-md rotate-[-2deg] shadow-sm border border-white/20"></div>
 
-        {/* 2. Container for Note + Controls */}
-        <div className="w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl flex flex-col gap-8 items-center pl-8 sm:pl-0 transition-all duration-300"> 
-          
-          {/* THE STICKY NOTE (Input Form) */}
-          <form 
-            onSubmit={handleSubmit}
-            className="w-full aspect-square sm:aspect-[4/3] md:aspect-[4/3] shadow-2xl transition-colors duration-500 ease-in-out relative flex flex-col p-6 sm:p-8 md:p-10 lg:p-12 transform rotate-1 hover:rotate-0 transition-transform"
-            style={{ 
-              backgroundColor: formData.color,
-              fontFamily: '"Caveat", cursive', // Handwritten font
-              boxShadow: '15px 15px 40px rgba(0,0,0,0.2), inset 0 0 20px rgba(0,0,0,0.05)' 
-            }}
-          >
-            {/* Visual: Tape at top */}
-            <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-24 sm:w-32 md:w-40 h-8 sm:h-10 bg-white/40 backdrop-blur-sm rotate-[-2deg] shadow-sm border border-white/50"></div>
+          <form onSubmit={handleSubmit} className="h-full flex flex-col gap-4">
+            
+            {/* Header */}
+            <h1 className="text-3xl font-bold text-black/70 text-center mb-2">Write a Note</h1>
 
-            {/* To Input */}
-            <div className="flex items-end gap-2 mb-4 sm:mb-6">
-              <span className="text-xl sm:text-2xl md:text-3xl text-black/60 font-bold">To:</span>
+            {/* Error Message */}
+            {error && (
+              <div className="bg-red-500/20 text-red-900 px-4 py-2 rounded-md text-center font-sans text-sm font-bold border border-red-500/30">
+                {error}
+              </div>
+            )}
+
+            {/* To Field */}
+            <div className="flex flex-col">
+              <label className="text-xl font-bold text-black/60 pl-1">To:</label>
               <input
                 type="text"
-                name="to"
-                value={formData.to}
+                name="to_name"
+                value={formData.to_name}
                 onChange={handleChange}
                 placeholder="Someone special..."
-                maxLength={30}
-                className="flex-grow bg-transparent border-b-2 border-black/20 focus:border-black/40 outline-none text-2xl sm:text-3xl md:text-4xl text-gray-900 placeholder:text-black/30 pb-1 transition-colors"
+                className="bg-transparent border-b-2 border-black/10 focus:border-black/40 outline-none text-2xl px-2 py-1 placeholder:text-black/20"
+                maxLength={50}
               />
             </div>
 
-            {/* Message Area */}
-            <textarea
-              name="message"
-              value={formData.message}
-              onChange={handleChange}
-              required
-              placeholder="Write your feelings here..."
-              className="flex-grow w-full bg-transparent border-none outline-none resize-none text-2xl sm:text-3xl md:text-4xl text-gray-900 placeholder:text-black/30 leading-relaxed"
-            ></textarea>
-
-            {/* Alias Input (Bottom Right) */}
-            <div className="flex items-center justify-end gap-2 mt-4 sm:mt-6">
-              <span className="text-xl sm:text-2xl md:text-3xl text-black/60 font-bold">-</span>
-              <input
-                type="text"
-                name="alias"
-                value={formData.alias}
+            {/* Message Field */}
+            <div className="flex flex-col flex-grow relative">
+              <label className="text-xl font-bold text-black/60 pl-1">Message:</label>
+              <textarea
+                name="message"
+                value={formData.message}
                 onChange={handleChange}
-                placeholder="Your Alias"
-                maxLength={20}
-                className="w-2/3 sm:w-1/2 bg-transparent border-b-2 border-black/20 focus:border-black/40 outline-none text-xl sm:text-2xl md:text-3xl text-gray-900 text-right placeholder:text-black/30 pb-1 transition-colors"
+                required
+                maxLength={MAX_CHARS}
+                placeholder="Type your message here..."
+                className="w-full h-full bg-transparent resize-none outline-none text-2xl leading-relaxed p-2 placeholder:text-black/20"
               />
+              {/* Character Counter */}
+              <div className={`absolute bottom-0 right-0 text-sm font-bold font-sans pointer-events-none transition-colors ${
+                formData.message.length >= MAX_CHARS ? 'text-red-500' : 'text-black/30'
+              }`}>
+                {formData.message.length} / {MAX_CHARS}
+              </div>
             </div>
 
-          </form>
-
-          {/* 3. CONTROLS (On the Notebook Paper) */}
-          <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-6 bg-white/50 backdrop-blur-sm p-5 rounded-2xl border-2 border-gray-100/80 shadow-sm">
-            
-            {/* Color Palette */}
-            <div className="flex gap-3 p-1">
-              {colors.map((color) => (
-                <button
-                  key={color}
-                  type="button"
-                  onClick={() => setFormData({ ...formData, color })}
-                  className={`w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full transition-all transform hover:scale-110 shadow-sm ${
-                    formData.color === color 
-                      ? 'border-[3px] border-gray-400 scale-110 ring-2 ring-white' 
-                      : 'border-2 border-gray-200 opacity-80 hover:opacity-100'
-                  }`}
-                  style={{ backgroundColor: color }}
-                  aria-label={`Select color ${color}`}
+            {/* Alias Field */}
+            <div className="flex flex-col items-end">
+              <div className="w-2/3 flex items-center gap-2 border-b-2 border-black/10 focus-within:border-black/40">
+                <span className="text-xl font-bold text-black/60">-</span>
+                <input
+                  type="text"
+                  name="alias"
+                  value={formData.alias}
+                  onChange={handleChange}
+                  placeholder="Your alias (optional)"
+                  className="w-full bg-transparent outline-none text-xl py-1 placeholder:text-black/20 text-right"
+                  maxLength={30}
                 />
-              ))}
+              </div>
             </div>
 
-            {/* Submit Button */}
-            <button
-              onClick={handleSubmit} 
-              disabled={status.type === 'error' && status.message.includes('wait')}
-              className="w-full sm:w-auto flex items-center justify-center gap-2 bg-[#ab1615] hover:bg-[#8f1312] text-white font-sans font-bold px-8 py-3 rounded-full shadow-md hover:shadow-lg hover:-translate-y-1 transition-all disabled:opacity-50 disabled:cursor-not-allowed group text-sm sm:text-base"
-            >
-              <PenLine className="w-5 h-5 group-hover:rotate-12 transition-transform" />
-              Stick It!
-            </button>
-          </div>
+            {/* Color Picker */}
+            <div className="flex justify-between items-center mt-2 pt-4 border-t border-black/5">
+              <div className="flex gap-2 flex-wrap max-w-[70%]">
+                {colors.map((c) => (
+                  <button
+                    key={c}
+                    type="button"
+                    onClick={() => setFormData({ ...formData, color: c })}
+                    className={`w-6 h-6 rounded-full border border-black/10 shadow-sm transition-transform hover:scale-110 ${
+                      formData.color === c ? 'ring-2 ring-black/30 scale-110' : ''
+                    }`}
+                    style={{ backgroundColor: c }}
+                  />
+                ))}
+              </div>
 
+              {/* Action Buttons */}
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => navigate('/browse')}
+                  className="p-2 rounded-full hover:bg-black/5 text-black/60 transition-colors"
+                  title="Cancel"
+                >
+                  <X size={24} />
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="p-2 bg-black/80 text-white rounded-full shadow-lg hover:bg-black hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="Post Note"
+                >
+                  {loading ? (
+                    <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <Check size={24} />
+                  )}
+                </button>
+              </div>
+            </div>
+          </form>
         </div>
       </div>
     </div>

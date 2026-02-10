@@ -182,7 +182,7 @@ const Browse = () => {
               <ChevronLeft size={24} />
             </button>
             
-            <span className="font-mono text-sm font-bold text-[#5c3a1b] bg-[#fdfbf7]/80 backdrop-blur-sm px-4 py-1.5 rounded-full shadow-inner border border-[#8b5a2b]/10">
+            <span className="font-mono text-xs sm:text-sm font-bold text-[#5c3a1b] bg-[#fdfbf7]/80 backdrop-blur-sm px-3 py-1 sm:px-4 sm:py-1.5 rounded-full shadow-inner border border-[#8b5a2b]/10">
               {currentPage + 1} / {totalPages}
             </span>
 
