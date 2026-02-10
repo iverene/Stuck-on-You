@@ -70,12 +70,13 @@ const Submit = () => {
     <div 
       className="min-h-screen pt-20 pb-10 px-4 flex justify-center items-center"
       style={{
-        backgroundColor: '#f3f4f6',
+        backgroundColor: '#fdfbf7', // Paper White
+        // CSS Gradients to create the notebook lines
         backgroundImage: `
-          linear-gradient(335deg, rgba(0,0,0,0.03) 23px, transparent 23px),
-          linear-gradient(155deg, rgba(0,0,0,0.03) 23px, transparent 23px)
+          linear-gradient(90deg, transparent 40px, #ab161520 41px, transparent 41px), 
+          repeating-linear-gradient(0deg, #e5e7eb 0px, #e5e7eb 1px, transparent 1px, transparent 28px) 
         `,
-        backgroundSize: '58px 58px'
+        backgroundAttachment: 'local' 
       }}
     >
       <Navbar />
