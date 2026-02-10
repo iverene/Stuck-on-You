@@ -78,6 +78,14 @@ const Browse = () => {
     }));
   }, [currentNotes]);
 
+  // Helper to determine font size based on message length
+  const getNoteFontSize = (text) => {
+    if (!text) return 'text-3xl sm:text-4xl';
+    if (text.length > 200) return 'text-xl sm:text-2xl'; // Very long: smallest font
+    if (text.length > 100) return 'text-2xl sm:text-3xl'; // Medium long: medium font
+    return 'text-3xl sm:text-4xl'; // Short: default large font
+  };
+
   return (
     // MAIN CONTAINER
     <div 
@@ -230,7 +238,7 @@ const Browse = () => {
                 </div>
               )}
               
-              <p className="text-3xl sm:text-4xl leading-relaxed text-black w-full overflow-y-auto max-h-[60vh] custom-scrollbar">
+              <p className={`${getNoteFontSize(selectedNote.message)} leading-relaxed text-black w-full overflow-y-auto max-h-[60vh] [&::-webkit-scrollbar]:hidden [scrollbar-width:none] [-ms-overflow-style:none]`}>
                 {selectedNote.message}
               </p>
 

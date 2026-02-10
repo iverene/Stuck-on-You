@@ -45,7 +45,7 @@ const About = () => {
             <img 
               src={idIverene} 
               alt="Frontend Developer - Iverene" 
-              className="w-64 sm:w-72 lg:w-80 shadow-lg rounded-xl border-2 border-white/20"
+              className="w-64 sm:w-72 lg:w-80 shadow-lg"
             />
           </a>
 
@@ -59,7 +59,7 @@ const About = () => {
             <img 
               src={idJarey} 
               alt="Backend Developer - Jarey" 
-              className="w-64 sm:w-72 lg:w-80 shadow-lg rounded-xl border-2 border-white/20"
+              className="w-64 sm:w-72 lg:w-80 shadow-lg"
             />
           </a>
 
