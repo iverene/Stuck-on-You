@@ -22,13 +22,13 @@ const Home = () => {
         <img 
           src={headingImage} 
           alt="Stuck on You - Home Page" 
-          className="w-72 sm:w-96 md:w-xl lg:max-w-2xl drop-shadow-sm object-contain" 
+          className="w-72 sm:w-96 md:w-lg lg:max-w-xl drop-shadow-sm object-contain" 
         />
       </div>
 
       {/* CTA Buttons */}
       {/* Changed: Flex-col on mobile for stacking, Flex-row on sm screens and up */}
-      <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 w-full max-w-xs sm:max-w-none justify-center">
+      <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 w-full max-w-xs sm:max-w-none mb-3 justify-center">
         
         {/* Primary Button */}
         <Link 
