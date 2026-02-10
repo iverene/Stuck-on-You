@@ -2,17 +2,20 @@
 import express from 'express';
 import { supabase } from '../lib/supabase.js';
 import { rateLimit } from 'express-rate-limit';
+import { isOffensive } from '../lib/filter.js';
 
 const router = express.Router();
 
-// Define a specific limiter for POST requests
+// Updated limiter: 50 posts per 20 minutes per IP
 const submitLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hour
-  limit: 5, 
-  message: { error: 'You have shared enough drama for this hour! Please wait.' }
+  windowMs: 20 * 60 * 1000, // 20 minutes
+  limit: 50, // 50 requests
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  message: { error: 'Too much drama! Please wait a few minutes before posting again.' }
 });
 
-// GET route (No strict limit)
+// GET route remains unrestricted
 router.get('/', async (req, res) => {
   const { data, error } = await supabase
     .from('notes')
@@ -23,10 +26,20 @@ router.get('/', async (req, res) => {
   return res.json(data);
 });
 
-// POST route (Apply submitLimiter here)
 router.post('/', submitLimiter, async (req, res) => {
   const { to_name, message, alias, color } = req.body;
-  
+
+  // Combine all fields to check for profanity in one go
+  const contentToCheck = `${to_name} ${message} ${alias}`;
+  const hasProfanity = await isOffensive(contentToCheck);
+
+  if (hasProfanity) {
+    return res.status(400).json({ 
+      //error: 'Your message contains words that violate our community guidelines.'
+      error: 'Oops your message has some words that we can\'t allow - Magmahalan lang po tayo :)'
+    });
+  }
+
   const { data, error } = await supabase
     .from('notes')
     .insert([{ to_name, message, alias, color }])
