@@ -2,6 +2,7 @@
 import express from 'express';
 import { supabase } from '../lib/supabase.js';
 import { rateLimit } from 'express-rate-limit';
+import { isOffensive } from '../lib/filter.js';
 
 const router = express.Router();
 
@@ -25,10 +26,20 @@ router.get('/', async (req, res) => {
   return res.json(data);
 });
 
-// POST route with the updated limiter
 router.post('/', submitLimiter, async (req, res) => {
   const { to_name, message, alias, color } = req.body;
-  
+
+  // Combine all fields to check for profanity in one go
+  const contentToCheck = `${to_name} ${message} ${alias}`;
+  const hasProfanity = await isOffensive(contentToCheck);
+
+  if (hasProfanity) {
+    return res.status(400).json({ 
+      //error: 'Your message contains words that violate our community guidelines.'
+      error: 'Oops your message has some words that we can\'t allow - Magmahalan lang po tayo :)'
+    });
+  }
+
   const { data, error } = await supabase
     .from('notes')
     .insert([{ to_name, message, alias, color }])
