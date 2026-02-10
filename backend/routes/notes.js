@@ -5,14 +5,16 @@ import { rateLimit } from 'express-rate-limit';
 
 const router = express.Router();
 
-// Define a specific limiter for POST requests
+// Updated limiter: 50 posts per 20 minutes per IP
 const submitLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hour
-  limit: 5, 
-  message: { error: 'You have shared enough drama for this hour! Please wait.' }
+  windowMs: 20 * 60 * 1000, // 20 minutes
+  limit: 50, // 50 requests
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  message: { error: 'Too much drama! Please wait a few minutes before posting again.' }
 });
 
-// GET route (No strict limit)
+// GET route remains unrestricted
 router.get('/', async (req, res) => {
   const { data, error } = await supabase
     .from('notes')
@@ -23,7 +25,7 @@ router.get('/', async (req, res) => {
   return res.json(data);
 });
 
-// POST route (Apply submitLimiter here)
+// POST route with the updated limiter
 router.post('/', submitLimiter, async (req, res) => {
   const { to_name, message, alias, color } = req.body;
   
