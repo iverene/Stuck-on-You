@@ -1,6 +1,7 @@
-import { useState, useEffect, useMemo } from 'react';
+// frontend/src/pages/Browse.jsx
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { PenLine, X } from 'lucide-react'; 
+import { PenLine, X, ChevronLeft, ChevronRight } from 'lucide-react'; 
 import Navbar from '../components/Navbar';
 
 const Browse = () => {
@@ -15,23 +16,28 @@ const Browse = () => {
   // Popup State
   const [selectedNote, setSelectedNote] = useState(null);
 
-  // Fetch real notes from the database
-  useEffect(() => {
-    const fetchNotes = async () => {
-      try {
-        const response = await fetch(`${API_URL}/api/notes`);
-        const data = await response.json();
-        setNotes(data);
-      } catch (error) {
-        console.error('Failed to fetch notes:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchNotes();
+  // Fetch real notes from the database (Memoized for polling)
+  const fetchNotes = useCallback(async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/notes`);
+      const data = await response.json();
+      setNotes(data);
+    } catch (error) {
+      console.error('Failed to fetch notes:', error);
+    } finally {
+      setLoading(false);
+    }
   }, [API_URL]);
 
-  // Automatic Pagination Timer (20 Seconds)
+  // Initial Fetch + Polling (Every 10 seconds)
+  useEffect(() => {
+    fetchNotes(); // Initial load
+
+    const pollInterval = setInterval(fetchNotes, 10000); // Poll for new notes
+    return () => clearInterval(pollInterval);
+  }, [fetchNotes]);
+
+  // Automatic Pagination Timer (Retained - 20 Seconds)
   useEffect(() => {
     if (notes.length <= NOTES_PER_PAGE) return;
 
@@ -44,6 +50,17 @@ const Browse = () => {
 
     return () => clearInterval(interval);
   }, [notes.length]);
+
+  // Manual Pagination Helpers
+  const totalPages = Math.ceil(notes.length / NOTES_PER_PAGE);
+
+  const handlePrevPage = () => {
+    setCurrentPage((prev) => (prev - 1 + totalPages) % totalPages);
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage((prev) => (prev + 1) % totalPages);
+  };
 
   // Calculate notes to display for current page
   const currentNotes = useMemo(() => {
@@ -62,7 +79,7 @@ const Browse = () => {
   }, [currentNotes]);
 
   return (
-    // MAIN CONTAINER: Applied Brick Wall Background here
+    // MAIN CONTAINER
     <div 
       className="relative w-full min-h-screen py-20 px-2 sm:px-4 flex justify-center items-start"
       style={{
@@ -82,7 +99,7 @@ const Browse = () => {
       
       {/* Corkboard Container */}
       <div 
-        className="relative w-full max-w-7xl min-h-[85vh] bg-[#d7a876] border-8 md:border-[16px] border-[#8b5a2b] rounded-lg shadow-2xl p-2 sm:p-8 overflow-hidden transition-all duration-500"
+        className="relative w-full max-w-7xl min-h-[85vh] bg-[#d7a876] border-8 md:border-[16px] border-[#8b5a2b] rounded-lg shadow-2xl p-2 sm:p-8 pb-20 overflow-hidden transition-all duration-500"
         style={{
           // Shadow to make it look like it's hanging off the wall
           boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 0 80px rgba(0,0,0,0.3)',
@@ -94,20 +111,21 @@ const Browse = () => {
           backgroundPosition: '0 0, 10px 10px'
         }}
       >
-        {/* Page Indicator */}
+        {/* Page Indicator (Top Right - Existing) */}
         {!loading && notes.length > NOTES_PER_PAGE && (
           <div className="absolute top-2 right-2 bg-white/50 px-2 py-1 rounded text-xs font-mono opacity-50 pointer-events-none z-10">
-             Page {currentPage + 1} of {Math.ceil(notes.length / NOTES_PER_PAGE)}
+             Page {currentPage + 1} of {totalPages}
           </div>
         )}
 
+        {/* Loading Spinner */}
         {loading ? (
           <div className="flex flex-col items-center justify-center h-64 text-white font-sans mt-20">
             <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin mb-4"></div>
             <p className="text-xl font-cursive">Loading notes...</p>
           </div>
         ) : (
-          <div className="flex flex-wrap justify-center content-start gap-4 sm:gap-8 pt-6 pb-24 animate-fadeIn">
+          <div className="flex flex-wrap justify-center content-start gap-4 sm:gap-8 pt-6 animate-fadeIn">
             {stickyNotes.map((note) => (
               <div
                 key={note.id}
@@ -144,6 +162,32 @@ const Browse = () => {
             ))}
           </div>
         )}
+
+        {/* Manual Pagination Controls (Bottom Center) */}
+        {!loading && notes.length > NOTES_PER_PAGE && (
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-4 z-30">
+            <button 
+              onClick={handlePrevPage}
+              className="p-2 bg-[#fdfbf7] rounded-full shadow-lg border-2 border-[#8b5a2b]/20 text-[#8b5a2b] hover:bg-white hover:scale-110 active:scale-95 transition-all duration-200"
+              aria-label="Previous Page"
+            >
+              <ChevronLeft size={24} />
+            </button>
+            
+            <span className="font-mono text-sm font-bold text-[#5c3a1b] bg-[#fdfbf7]/80 backdrop-blur-sm px-4 py-1.5 rounded-full shadow-inner border border-[#8b5a2b]/10">
+              {currentPage + 1} / {totalPages}
+            </span>
+
+            <button 
+              onClick={handleNextPage}
+              className="p-2 bg-[#fdfbf7] rounded-full shadow-lg border-2 border-[#8b5a2b]/20 text-[#8b5a2b] hover:bg-white hover:scale-110 active:scale-95 transition-all duration-200"
+              aria-label="Next Page"
+            >
+              <ChevronRight size={24} />
+            </button>
+          </div>
+        )}
+
       </div>
 
       {/* Write Button */}
