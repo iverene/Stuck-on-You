@@ -128,13 +128,6 @@ const Browse = () => {
       >
         {/* TOP CONTROLS: Page Indicator + Full Screen Toggle */}
         <div className="absolute top-2 right-2 flex items-center gap-2 z-30">
-          
-          {/* Page Indicator */}
-          {!loading && notes.length > NOTES_PER_PAGE && (
-            <div className="bg-white/50 px-2 py-1 rounded text-xs font-mono opacity-60 pointer-events-none">
-              Page {currentPage + 1} of {totalPages}
-            </div>
-          )}
 
           {/* Full Screen Toggle Button */}
           <button
@@ -193,25 +186,25 @@ const Browse = () => {
 
         {/* Manual Pagination Controls (Bottom Center) */}
         {!loading && notes.length > NOTES_PER_PAGE && (
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-4 z-30">
+          <div className="absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 sm:gap-4 z-30">
             <button 
               onClick={handlePrevPage}
-              className="p-2 bg-[#fdfbf7] rounded-full shadow-lg border-2 border-[#8b5a2b]/20 text-[#8b5a2b] hover:bg-white hover:scale-110 active:scale-95 transition-all duration-200"
+              className="p-1.5 sm:p-2 bg-[#fdfbf7] rounded-full shadow-lg border-2 border-[#8b5a2b]/20 text-[#8b5a2b] hover:bg-white hover:scale-110 active:scale-95 transition-all duration-200"
               aria-label="Previous Page"
             >
-              <ChevronLeft size={24} />
+              <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
             </button>
             
-            <span className="font-mono text-xs sm:text-sm font-bold text-[#5c3a1b] bg-[#fdfbf7]/80 backdrop-blur-sm px-5 py-1 sm:py-1.5 rounded-full shadow-inner border border-[#8b5a2b]/10">
+            <span className="font-mono text-xs sm:text-sm font-bold text-[#5c3a1b] bg-[#fdfbf7] px-3 sm:px-5 py-1.5 rounded-full shadow-inner border border-[#8b5a2b]/20 min-w-[70px] sm:min-w-[90px] text-center flex justify-center items-center shadow-sm">
               {currentPage + 1} / {totalPages}
             </span>
 
             <button 
               onClick={handleNextPage}
-              className="p-2 bg-[#fdfbf7] rounded-full shadow-lg border-2 border-[#8b5a2b]/20 text-[#8b5a2b] hover:bg-white hover:scale-110 active:scale-95 transition-all duration-200"
+              className="p-1.5 sm:p-2 bg-[#fdfbf7] rounded-full shadow-lg border-2 border-[#8b5a2b]/20 text-[#8b5a2b] hover:bg-white hover:scale-110 active:scale-95 transition-all duration-200"
               aria-label="Next Page"
             >
-              <ChevronRight size={24} />
+              <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
             </button>
           </div>
         )}
