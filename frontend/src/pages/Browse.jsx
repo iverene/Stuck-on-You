@@ -35,7 +35,7 @@ const Browse = () => {
   useEffect(() => {
     fetchNotes(); // Initial load
 
-    const pollInterval = setInterval(fetchNotes, 10000); // Poll for new notes
+    const pollInterval = setInterval(fetchNotes, 5000); // Poll for new notes
     return () => clearInterval(pollInterval);
   }, [fetchNotes]);
 
@@ -48,7 +48,7 @@ const Browse = () => {
         const totalPages = Math.ceil(notes.length / NOTES_PER_PAGE);
         return (prev + 1) % totalPages;
       });
-    }, 20000); 
+    }, 60000); 
 
     return () => clearInterval(interval);
   }, [notes.length]);
